@@ -3,6 +3,6 @@ services:
     name: weather-on-render
     env: docker
     plan: free
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./onrender/Dockerfile
     region: oregon
     autoDeploy: true
