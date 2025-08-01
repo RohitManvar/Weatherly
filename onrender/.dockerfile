@@ -1,13 +1,3 @@
-FROM tomcat:9.0-jdk11-openjdk
-
-# Remove default webapps (optional but clean)
-RUN rm -rf /usr/local/tomcat/webapps/*
-
-# Add your WAR file and deploy as ROOT.war
-COPY weather.war /usr/local/tomcat/webapps/ROOT.war
-
-# Expose Tomcat's default port
+FROM tomcat:9.0-jdk17
+COPY ./dist/WeatherApp.war /usr/local/tomcat/webapps/WeatherApp.war
 EXPOSE 8080
-
-# Start Tomcat
-CMD ["catalina.sh", "run"]
