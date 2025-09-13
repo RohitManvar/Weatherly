@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: weather-on-render
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile
-    region: oregon
-    autoDeploy: true
