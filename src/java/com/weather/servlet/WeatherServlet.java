@@ -60,17 +60,17 @@ public class WeatherServlet extends HttpServlet {
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         String servletPath = request.getServletPath();
-        
+
         // Handle radar request
         if ("/radar".equals(servletPath)) {
             request.getRequestDispatcher("/radar.jsp").forward(request, response);
             return;
         }
-        
+
         String location = request.getParameter("location");
         String lat = request.getParameter("lat");
         String lon = request.getParameter("lon");
-        
+
         // Default to Vadodara if no location or coordinates are provided
         if (location == null || location.trim().isEmpty()) {
             location = "Vadodara"; // Set default location
@@ -95,7 +95,7 @@ public class WeatherServlet extends HttpServlet {
             addRecentSearch(request, location);
 
             // Set location to session for consistent reference
-            request.getSession().setAttribute("location", location);  // This is the current city
+            request.getSession().setAttribute("location", location);
 
             WeatherPrediction prediction = predictor.generatePrediction(location);
             CurrentWeather currentWeather = fetchCurrentWeather(location);
@@ -104,9 +104,9 @@ public class WeatherServlet extends HttpServlet {
             if (prediction != null && currentWeather != null) {
                 Map<String, Double> trendMap = predictor.getTemperatureTrend(location);
                 Map<String, Double> forecastTrend = predictor.get5DayTemperatureTrend(location);
-                List<Map<String, Object>> hourlyForecast = ForecastUtil.generateHourlyForecast(fiveDayForecast, forecastTrend, new Random());
+                List<Map<String, Object>> hourlyForecast = ForecastUtil.generateHourlyForecast(
+                        fiveDayForecast, forecastTrend, new Random());
 
-                // Set attributes for the JSP page
                 request.setAttribute("location", location);
                 request.setAttribute("prediction", prediction);
                 request.setAttribute("current", currentWeather);
@@ -114,11 +114,10 @@ public class WeatherServlet extends HttpServlet {
                 request.setAttribute("forecast", fiveDayForecast);
                 request.setAttribute("forecastTrend", forecastTrend);
                 request.setAttribute("hourlyForecast", hourlyForecast);
-                
-                List<String> allLocations = predictor.getAvailableLocations(); // Fetch all available locations
-                request.setAttribute("availableLocations", allLocations); // Pass it to the JSP
-                
-                // Forward the request to Weather.jsp
+
+                List<String> allLocations = predictor.getAvailableLocations();
+                request.setAttribute("availableLocations", allLocations);
+
                 request.getRequestDispatcher("/Weather.jsp").forward(request, response);
                 return;
             } else {
@@ -133,6 +132,12 @@ public class WeatherServlet extends HttpServlet {
         }
     }
 
+    // Handle POST requests by reusing doGet()
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
+    }
 
     private void addRecentSearch(HttpServletRequest request, String location) {
         List<String> recentSearches = (List<String>) request.getSession().getAttribute("recentSearches");
@@ -141,9 +146,9 @@ public class WeatherServlet extends HttpServlet {
         }
 
         if (!recentSearches.contains(location)) {
-            recentSearches.add(0, location); // Add to the beginning
+            recentSearches.add(0, location);
             if (recentSearches.size() > 5) {
-                recentSearches.remove(5); // Keep only the latest 5 searches
+                recentSearches.remove(5);
             }
         }
 
@@ -179,7 +184,7 @@ public class WeatherServlet extends HttpServlet {
         current.setHumidity(obj.getJSONObject("main").getDouble("humidity"));
         current.setPressure(obj.getJSONObject("main").getDouble("pressure"));
         current.setWindSpeed(obj.getJSONObject("wind").getDouble("speed"));
-        current.setWindGust(obj.getJSONObject("wind").optDouble("gust", 0)); // Handle wind gust (optional)
+        current.setWindGust(obj.getJSONObject("wind").optDouble("gust", 0));
         current.setCondition(obj.getJSONArray("weather").getJSONObject(0).getString("main"));
         current.setDescription(obj.getJSONArray("weather").getJSONObject(0).getString("description"));
         current.setLatitude(obj.getJSONObject("coord").getDouble("lat"));

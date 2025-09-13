@@ -6,10 +6,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Radar - Weatherly</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="index.css" type="text/css">
+
     <style>
         #map {
             height: 500px;
@@ -23,6 +29,7 @@
     </style>
 </head>
 <body>
+
     <jsp:include page="common-navbar.jsp" />
 
     <div class="container mt-4">
@@ -36,7 +43,7 @@
                 </nav>
             </div>
         </div>
-        
+
         <div class="card">
             <div class="card-header bg-primary text-white">
                 <h3><i class="fas fa-satellite-dish mr-2"></i>Live Weather Radar</h3>
@@ -44,6 +51,7 @@
             <div class="card-body">
                 <div class="controls">
                     <div class="row">
+                        <!-- Location Input -->
                         <div class="col-md-4 mb-3">
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -57,6 +65,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Layer Select -->
                         <div class="col-md-4 mb-3">
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -71,6 +81,8 @@
                                 </select>
                             </div>
                         </div>
+
+                        <!-- Use My Location -->
                         <div class="col-md-4 mb-3">
                             <button id="use-location-btn" class="btn btn-primary btn-block">
                                 <i class="fas fa-map-marker-alt mr-2"></i>Use My Location
@@ -78,82 +90,69 @@
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- Map -->
                 <div id="map"></div>
-                
+
                 <div class="mt-3">
-                    <p class="text-muted"><i class="fas fa-info-circle mr-2"></i>Map data is powered by OpenWeatherMap API. Refresh the page to update the radar data.</p>
+                    <p class="text-muted">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Map data is powered by OpenWeatherMap API. Refresh the page to update the radar data.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
     <footer class="mt-5">
         <div class="container text-center">
             <p class="mb-0">&copy; 2025 Weatherly. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- JS Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
     <script>
-        $(document).ready(function() {
-            // Default coordinates (center of the map)
-            let lat = 22.3072;  // Default to Vadodara, India
+        $(function() {
+            let lat = 22.3072;  // Vadodara default
             let lon = 73.1812;
             let mapZoom = 8;
-            
-            // OpenWeatherMap API key (same as used in your servlet)
             const apiKey = 'c971764fb766f7bba0bbccd5e4a182ab';
-            
-            // Initialize the map
+
             const map = L.map('map').setView([lat, lon], mapZoom);
-            
-            // Add base map layer
+
+            // Base layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
-            
-            // Add weather radar layer
+
             let weatherLayer;
-            
             function addWeatherLayer(layer) {
-                if (weatherLayer) {
-                    map.removeLayer(weatherLayer);
-                }
-                
+                if (weatherLayer) map.removeLayer(weatherLayer);
                 weatherLayer = L.tileLayer(`https://tile.openweathermap.org/map/${layer}/{z}/{x}/{y}.png?appid=${apiKey}`, {
                     attribution: '&copy; <a href="https://openweathermap.org">OpenWeatherMap</a>',
                     maxZoom: 18
                 }).addTo(map);
             }
-            
-            // Default to precipitation layer
+
             addWeatherLayer('precipitation_new');
-            
-            // Handle layer selection change
+
+            // Layer change
             $('#layer-select').change(function() {
                 addWeatherLayer($(this).val());
             });
-            
-            // Handle location search
-            $('#search-btn').click(function() {
-                searchLocation();
-            });
-            
-            $('#location-input').keypress(function(e) {
-                if (e.which === 13) {
-                    searchLocation();
-                }
-            });
-            
+
+            // Search location
             function searchLocation() {
                 const location = $('#location-input').val().trim();
-                if (location) {
-                    // Geocode the location
+                    if (!location) return;
+
                     $.ajax({
-                        url: `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${apiKey}`,
+                        url: "https://api.openweathermap.org/geo/1.0/direct?q=" + encodeURIComponent(location) + "&limit=1&appid=" + apiKey,
                         method: 'GET',
                         success: function(data) {
                             if (data && data.length > 0) {
@@ -168,24 +167,29 @@
                             alert('Error searching for location. Please try again.');
                         }
                     });
-                }
             }
-            
-            // Handle "Use My Location" button
+
+            $('#search-btn').click(searchLocation);
+            $('#location-input').keypress(function(e) {
+                if (e.which === 13) searchLocation();
+            });
+
+            // Use my location
             $('#use-location-btn').click(function() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        lat = position.coords.latitude;
-                        lon = position.coords.longitude;
-                        map.setView([lat, lon], mapZoom);
-                    }, function() {
-                        alert('Unable to get your location. Please allow location access or enter a location manually.');
-                    });
-                } else {
+                if (!navigator.geolocation) {
                     alert('Geolocation is not supported by your browser.');
+                    return;
                 }
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                    map.setView([lat, lon], mapZoom);
+                }, function() {
+                    alert('Unable to get your location. Please allow location access or enter a location manually.');
+                });
             });
         });
     </script>
+
 </body>
 </html>

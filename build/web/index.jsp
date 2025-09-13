@@ -24,16 +24,16 @@
         <!-- Search Form -->
         <div class="row justify-content-center">
             <div class="col-md-8">
-                 <form action="weather" method="get">
-                        <div class="input-group mb-3">
-                            <input type="text" name="location" class="form-control" placeholder="Enter city name..." required>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search mr-2"></i>Get Weather
-                                </button>
-                            </div>
+                <form action="${pageContext.request.contextPath}/weather" method="post">
+                    <div class="input-group mb-3">
+                        <input type="text" name="location" class="form-control" placeholder="Enter city name..." required>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search mr-2"></i>Get Weather
+                            </button>
                         </div>
-                    </form>
+                    </div>
+                </form>
 
                 <!-- Use My Location -->
                 <button id="getLocationBtn" class="btn btn-secondary btn-block mb-3">
@@ -66,9 +66,12 @@
                                     <ul class="list-group">
                                         <c:forEach items="${recentSearches}" var="search">
                                             <li class="list-group-item">
-                                                <a href="weather?location=${search}">
-                                                    <i class="fas fa-history mr-2 text-secondary"></i>${search}
-                                                </a>
+                                                <form action="${pageContext.request.contextPath}/weather" method="post" class="mb-0">
+                                                    <input type="hidden" name="location" value="${search}">
+                                                    <button type="submit" class="btn btn-link p-0">
+                                                        <i class="fas fa-history mr-2 text-secondary"></i>${search}
+                                                    </button>
+                                                </form>
                                             </li>
                                         </c:forEach>
                                     </ul>
