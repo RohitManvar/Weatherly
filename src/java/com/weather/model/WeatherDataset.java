@@ -40,7 +40,7 @@ public class WeatherDataset {
                     double windSpeed = Double.parseDouble(parts[6].trim());
                     double pressure = Double.parseDouble(parts[7].trim());
 
-                    WeatherRecord record = new WeatherRecord(city, date, temperature, humidity, condition, precipitation, windSpeed, pressure);
+                    WeatherRecord record = new WeatherRecord(city, date, temperature, humidity, condition, precipitation);
                     dataByCity.computeIfAbsent(city, k -> new ArrayList<>()).add(record);
                 } catch (NumberFormatException e) {
                     // Skip malformed rows
