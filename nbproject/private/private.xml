@@ -7,6 +7,8 @@
             <file>file:/D:/Weatherly/src/java/com/weather/model/WeatherPredictor.java</file>
             <file>file:/D:/Weatherly/src/java/com/weather/model/WeatherRecord.java</file>
             <file>file:/D:/Weatherly/src/java/com/weather/model/WeatherPrediction.java</file>
+            <file>file:/D:/Weatherly/web/WEB-INF/web.xml</file>
+            <file>file:/D:/Weatherly/src/java/com/weather/servlet/WeatherServlet.java</file>
         </group>
     </open-files>
 </project-private>

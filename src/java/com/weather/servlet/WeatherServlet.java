@@ -24,7 +24,6 @@ import java.util.Random;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet(name = "WeatherServlet", urlPatterns = {"/weather", "/weather/current", "/radar"})
 public class WeatherServlet extends HttpServlet {
     private WeatherPredictor predictor;
     private final String API_KEY = "c971764fb766f7bba0bbccd5e4a182ab"; // OpenWeatherMap API key
